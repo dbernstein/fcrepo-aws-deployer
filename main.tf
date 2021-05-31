@@ -290,11 +290,12 @@ resource "null_resource" "prepare_beanstalk_zip" {
     command = <<EOT
                 cd output
                 zip fcrepo-$FCREPO_VERSION-eb-docker.zip *.json .ebextensions/*
-                aws s3 cp fcrepo-$FCREPO_VERSION-eb-docker.zip s3://$BUCKET/fcrepo-$FCREPO_VERSION-eb-docker.zip
+                aws s3 cp fcrepo-$FCREPO_VERSION-eb-docker.zip s3://$BUCKET/fcrepo-$FCREPO_VERSION-eb-docker.zip --profile $PROFILE
 EOT
       environment = {
         FCREPO_VERSION = var.fcrepo_version
         BUCKET         = var.aws_artifact_bucket_name
+        PROFILE         = var.aws_profile
       }
   }
 }
@@ -349,7 +350,7 @@ resource "aws_elastic_beanstalk_environment" "fcrepo" {
 
   name                = "${var.app_name}-${var.app_environment}"
   application         = aws_elastic_beanstalk_application.fcrepo.name
-  solution_stack_name = "64bit Amazon Linux 2 v3.2.2 running Docker"
+  solution_stack_name = "64bit Amazon Linux 2 v3.3.1 running Docker"
   version_label       = aws_elastic_beanstalk_application_version.default.name
 
   setting {
